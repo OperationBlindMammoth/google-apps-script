@@ -29,35 +29,43 @@
 //    2. Paste the code in:
 
 function grabAllInfo(){
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Form Responses 1');
-  var names = ss.getRangeByName('Names').getValues();
+// Get the spreadsheet and give it the name ss
+  var ss = SpreadsheetApp.getActiveSpreadsheet();   
+  
+// Get all of the ranges that you named in the spreadsheet, get their values, and give the groups of values names.
+  var names = ss.getRangeByName('Names').getValues(); 
   var emails = ss.getRangeByName('Emails').getValues();
   var shortProblems = ss.getRangeByName('ShortProblems').getValues();
   var longProblems = ss.getRangeByName('LongProblems').getValues();
   var cardSubmittedYets = ss.getRangeByName('CardSubmittedYet').getValues();
-  var trelloEmail = ss.getRangeByName('TrelloEmailAddress').getValue();
+  var trelloEmail = ss.getRangeByName('TrelloEmailAddress').getValue(); // Use .getValue() if there is just one value.
   var numberOfResponses = ss.getRangeByName('NumberOfResponses').getValue();
-  Logger.clear();
-  for (var i=0; i<numberOfResponses; i++){
-    if(cardSubmittedYets[i] != 'Yes'){
-    Logger.log(cardSubmittedYets[i]);
-    
-      var name = names[i];
+
+// This for loop will cycle through all of the responses. 
+// If you're new to for loops, here it is in English:
+// "Make a variable called i equal zero. If i is less than numberOfResponses, follow the instructions in the loop.
+//  After each pass through the instructions, increase i by 1." 
+  
+  for (var i=0; i<numberOfResponses; i++){ 
+    if(cardSubmittedYets[i] != 'Yes'){    // "If this line hasn't been added to Trello..."
+
+      var name = names[i];   // Pull the member of names array that's in position i
       var email = emails[i];
       var shortProblem = shortProblems[i];
       var longProblem = longProblems[i];
     
-      SUBMITCARD(name,email,shortProblem,longProblem,trelloEmail);
-      ss.getRangeByName('CardSubmittedYet').getCell(i+1,1).setValue('Yes');
+      // Run the function below called SUBMITCARD and feed it these variables.
+      SUBMITCARD(name,email,shortProblem,longProblem,trelloEmail); 
+      ss.getRangeByName('CardSubmittedYet').getCell(i+1,1).setValue('Yes');  // Add 'Yes' to the spreadsheet to mark it done.
     }
   }
 }
 
+// This function receives all necessary data, formats the data appropriately into the subject and body, then sends the email to Trello.
 function SUBMITCARD(name,email,shortProblem,longProblem,trelloEmail) {
   var recipient = trelloEmail;
-  var subject = name + ' | ' + shortProblem;
-  var body = email + ' | ' + longProblem;
+  var subject = name + ' | ' + shortProblem; // The subject will become the name of the card.
+  var body = email + ' | ' + longProblem;    // The body will become the description of the card.
   
-  MailApp.sendEmail(recipient, subject, body);
+  MailApp.sendEmail(recipient, subject, body); // Send the email.
 }

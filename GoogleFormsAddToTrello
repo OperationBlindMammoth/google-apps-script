@@ -1,0 +1,71 @@
+// This script will add the contents of a Google Forms response to a new card in Trello.
+//
+// A. Google Forms
+//    1. Create a Google Form.
+//    2. Click on the the Responses tab.
+//    3. Click the spreadsheet icon to send the responses to a spreadsheet. A new spreadsheet would be best.
+//    4. Go to that spreadsheet.
+//
+// B. Google Sheets
+//    1. Scroll to the right and find the last used column. 
+//    2. Skip a few more columns, then add new headers in row 1 to 3 columns :
+//        Header 1 - "Trello card submitted yet?"
+//        Header 2 - "Trello board email address"
+//         -  In row 2 under this header, paste the Trello email address. 
+//         -  (In Trello, click 'Show Menu', then 'Email-to-board Settings', the copy the email address for the board.)
+//         -  Select that cell again and click Data --> Named ranges... --> + Add a range
+//         -  Name that cell TrelloEmailAddress
+//        Header 3 - "Number of responses"
+//         -  In row 2 under this header, add the formula =COUNTA(A2:A) which will count all form responses.
+//         -  Select that cell again and click Data --> Named ranges... --> + Add a range
+//         -  Name that cell NumberOfResponses
+//    3. For every column in the spreadsheet that you want to include in the Trello cards:
+//        a. Highlight the entire column except for row 1.
+//        b. Click Data --> Named ranges... --> + Add a range
+//        c. Give the range a very specific name without spaces or special characters.
+// 
+// C. Script editor
+//    1. In the spreadsheet, click Tools --> Script editor...
+//    2. Paste the code in:
+
+function grabAllInfo(){
+// Get the spreadsheet and give it the name ss
+  var ss = SpreadsheetApp.getActiveSpreadsheet();   
+  
+// Get all of the ranges that you named in the spreadsheet, get their values, and give the groups of values names.
+  var names = ss.getRangeByName('Names').getValues(); 
+  var emails = ss.getRangeByName('Emails').getValues();
+  var shortProblems = ss.getRangeByName('ShortProblems').getValues();
+  var longProblems = ss.getRangeByName('LongProblems').getValues();
+  var cardSubmittedYets = ss.getRangeByName('CardSubmittedYet').getValues();
+  var trelloEmail = ss.getRangeByName('TrelloEmailAddress').getValue(); // Use .getValue() if there is just one value.
+  var numberOfResponses = ss.getRangeByName('NumberOfResponses').getValue();
+
+// This for loop will cycle through all of the responses. 
+// If you're new to for loops, here it is in English:
+// "Make a variable called i equal zero. If i is less than numberOfResponses, follow the instructions in the loop.
+//  After each pass through the instructions, increase i by 1." 
+  
+  for (var i=0; i<numberOfResponses; i++){ 
+    if(cardSubmittedYets[i] != 'Yes'){    // "If this line hasn't been added to Trello..."
+
+      var name = names[i];   // Pull the member of names array that's in position i
+      var email = emails[i];
+      var shortProblem = shortProblems[i];
+      var longProblem = longProblems[i];
+    
+      // Run the function below called SUBMITCARD and feed it these variables.
+      SUBMITCARD(name,email,shortProblem,longProblem,trelloEmail); 
+      ss.getRangeByName('CardSubmittedYet').getCell(i+1,1).setValue('Yes');  // Add 'Yes' to the spreadsheet to mark it done.
+    }
+  }
+}
+
+// This function receives all necessary data, formats the data appropriately into the subject and body, then sends the email to Trello.
+function SUBMITCARD(name,email,shortProblem,longProblem,trelloEmail) {
+  var recipient = trelloEmail;
+  var subject = name + ' | ' + shortProblem; // The subject will become the name of the card.
+  var body = email + ' | ' + longProblem;    // The body will become the description of the card.
+  
+  MailApp.sendEmail(recipient, subject, body); // Send the email.
+}

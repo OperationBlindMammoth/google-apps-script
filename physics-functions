@@ -1,0 +1,81 @@
+// In Google Sheets, click Tools --> Script editor, paste this code in, and save. That's it! Go back to the spreadsheet and start using.
+// It has not been thoroughly tested, so use with caution and please report bugs.
+
+
+
+/**
+* Solves kinematic equation problems. 
+* 
+*
+* @param {text} valueNeeded The value you are calculating: Vi, Vf, a, t, or x
+* @param {text} valueNotIncluded The value to be omitted from the calculation: Vf, a, t, or x. 
+* All kinematic equations use 4 of the 5 possible values.
+* @param {number} Vi Initial velocity
+* @param {number} Vf Final velocity
+* @param {number} a acceleration
+* @param {number} t time in seconds
+* @param {number} x distance
+* @return The answer you're looking for
+* @customfunction
+*/
+
+// Reference http://4.bp.blogspot.com/-fkjH9mBEgTw/UEHQCVSTAvI/AAAAAAAAABo/ohNDu_TB90Q/s1600/notfreefall.jpg
+
+function KINEMATIC(valueNeeded,valueNotIncluded,Vi,Vf,a,t,x) {
+  var answer = 'No solution found';
+  
+  if (valueNeeded == 'Vi'){
+    if (valueNotIncluded == 'Vi'){answer = "Pick different missing value"} else {
+    if (valueNotIncluded == 'Vf'){answer = (x-(0.5 * a * t * t)) / t;} else {
+    if (valueNotIncluded == 'a'){answer = (x/(0.5*t))-Vf} else {
+    if (valueNotIncluded == 't'){answer = Math.sqrt(Vf*Vf-(2*a*x))} else {
+    if (valueNotIncluded == 'x'){Vf - a * t} 
+    }}}}
+  } else {
+  
+  
+  if (valueNeeded == 'Vf'){
+    if (valueNotIncluded == 'Vi'){answer = 'Vi always required'} else {
+    if (valueNotIncluded == 'Vf'){answer = "Pick different missing value"} else {
+    if (valueNotIncluded == 'a'){answer = (x/(0.5*t))-Vi} else {
+    if (valueNotIncluded == 't'){answer = Math.sqrt(Vi*Vi + 2*a*x)} else {
+    if (valueNotIncluded == 'x'){answer = Vi + a * t} 
+    }}}}
+  } else {
+  
+  
+  if (valueNeeded == 'a'){
+    if (valueNotIncluded == 'Vi'){answer = "Vi always required"} else {
+    if (valueNotIncluded == 'Vf'){answer = (x-Vi*t)/(0.5*t*t)} else {
+    if (valueNotIncluded == 'a'){answer = "Pick different missing value"} else {
+    if (valueNotIncluded == 't'){answer = (Vf*Vf - Vi*Vi)/(2*x)} else {
+    if (valueNotIncluded == 'x'){answer = (Vf - Vi)/t} else {
+    }}}}}
+  } else {
+  
+  
+  if (valueNeeded == 't'){
+    if (valueNotIncluded == 'a'){answer = x/(0.5*(Vi+Vf))} else {
+      if (a==0){answer = "acceleration required"} else {
+    if (valueNotIncluded == 'Vi'){answer = "Vi always required"} else {
+    if (valueNotIncluded == 'Vf'){answer = (-Vi + Math.sqrt(Vi*Vi+(4*0.5*a*x)))/a} else {
+    if (valueNotIncluded == 't'){answer = "Pick different missing value"} else {
+    if (valueNotIncluded == 'x'){answer = (Vf-Vi)/a} else {
+    }}}}}}
+  } else {
+  
+
+  if (valueNeeded == 'x'){
+    if (valueNotIncluded == 'Vi'){answer = "Vi always required"} else {
+    if (valueNotIncluded == 'Vf'){answer = Vi*t + 0.5*a*t*t} else {
+    if (valueNotIncluded == 'a'){answer = 0.5*(Vi + Vf) * t} else {
+    if (valueNotIncluded == 't'){answer = (Vf*Vf-Vi*Vi)/(2*a)} else {
+    if (valueNotIncluded == 'x'){answer = "Pick different missing value"} else {
+    }}}}}
+  } else {
+  
+  
+ }}}}}//if (valueNotIncluded == ''){answer = } else {
+  //return [[valueNeeded],[answer]];  
+  return answer;
+}
